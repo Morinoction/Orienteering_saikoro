@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>サイコロの旅 — ORIENTEERING EDITION</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Black+Han+Sans&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a0a0f;}
+#app{background:#0a0a0f;font-family:'Noto Sans JP',sans-serif;color:#f0e8d0;min-height:100vh;display:flex;flex-direction:column;max-width:520px;margin:0 auto;}
+.screen{display:none;flex-direction:column;flex:1;}
+.screen.active{display:flex;}
+.logo{text-align:center;padding:0.6rem 1rem 0.15rem;}
+.logo-main{font-family:'Black Han Sans',sans-serif;font-size:1.35rem;color:#f5c842;letter-spacing:0.08em;}
+.logo-sub{font-size:0.56rem;letter-spacing:0.3em;color:#604030;margin-top:2px;}
+.status-bar{display:flex;justify-content:space-between;align-items:center;padding:0.28rem 0.8rem;border-top:1px solid #222;border-bottom:1px solid #222;font-size:0.63rem;color:#c8b88a;flex-wrap:wrap;gap:2px;}
+.status-val{color:#ffe060;font-weight:700;}
+.section-heading{font-family:'Black Han Sans',sans-serif;font-size:0.78rem;letter-spacing:0.2em;color:#c8b88a;padding:0.35rem 0.7rem 0.1rem;border-bottom:1px solid #1e1e1e;}
+.flip-list{display:flex;flex-direction:column;gap:3px;padding:0.4rem 0.6rem 0.15rem;}
+.flip-cell{display:flex;align-items:stretch;border:2px solid;transition:filter 0.2s;}
+.flip-num-box{width:34px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-family:'Black Han Sans',sans-serif;flex-shrink:0;border-right:2px solid;}
+.flip-content{flex:1;padding:0.22rem 0.5rem;display:flex;flex-direction:column;justify-content:center;min-width:0;}
+.flip-badge{font-size:0.5rem;letter-spacing:0.1em;opacity:0.7;margin-bottom:1px;}
+.flip-name{font-size:0.75rem;font-weight:700;line-height:1.2;}
+.flip-link{font-size:0.6rem;margin-top:2px;}
+.flip-link a{color:#7fc8ff;text-decoration:underline;}
+.flip-dist-right{width:54px;display:flex;align-items:center;justify-content:center;font-size:0.52rem;text-align:center;line-height:1.3;border-left:2px solid;padding:0 3px;flex-shrink:0;}
+.fc1{border-color:#cc2222;background:#1a0000;}.fc1 .flip-num-box{background:#cc2222;color:#fff;border-color:#cc2222;}.fc1 .flip-badge{color:#ff9999;}.fc1 .flip-name{color:#ffcccc;}.fc1 .flip-dist-right{color:#ff8888;border-color:#cc2222;}
+.fc2{border-color:#cc7700;background:#1a0d00;}.fc2 .flip-num-box{background:#cc7700;color:#fff;border-color:#cc7700;}.fc2 .flip-badge{color:#ffcc77;}.fc2 .flip-name{color:#ffe0aa;}.fc2 .flip-dist-right{color:#ffbb55;border-color:#cc7700;}
+.fc3{border-color:#aaaa00;background:#181800;}.fc3 .flip-num-box{background:#aaaa00;color:#000;border-color:#aaaa00;}.fc3 .flip-badge{color:#eeee55;}.fc3 .flip-name{color:#ffffaa;}.fc3 .flip-dist-right{color:#dddd44;border-color:#aaaa00;}
+.fc4{border-color:#228822;background:#001a00;}.fc4 .flip-num-box{background:#228822;color:#fff;border-color:#228822;}.fc4 .flip-badge{color:#88ee88;}.fc4 .flip-name{color:#bbffbb;}.fc4 .flip-dist-right{color:#77dd77;border-color:#228822;}
+.fc5{border-color:#2255bb;background:#00001a;}.fc5 .flip-num-box{background:#2255bb;color:#fff;border-color:#2255bb;}.fc5 .flip-badge{color:#88aaff;}.fc5 .flip-name{color:#bbccff;}.fc5 .flip-dist-right{color:#7799ee;border-color:#2255bb;}
+.fc6{border-color:#882299;background:#110011;}.fc6 .flip-num-box{background:#882299;color:#fff;border-color:#882299;}.fc6 .flip-badge{color:#dd88ff;}.fc6 .flip-name{color:#eeccff;}.fc6 .flip-dist-right{color:#cc77ee;border-color:#882299;}
+.flip-cell.goal-cell{border-color:#f5c842;background:#1a1400;animation:goalPulse 1.5s ease-in-out infinite;}
+.flip-cell.stay-cell{border-color:#5577dd;background:#0a0e22;}
+.flip-cell.stay-cell .flip-num-box{background:#5577dd;color:#fff;border-color:#5577dd;}
+.flip-cell.stay-cell .flip-badge{color:#99aaff;}
+.flip-cell.stay-cell .flip-name{color:#ccd6ff;}
+.flip-cell.stay-cell .flip-dist-right{color:#99aaff;border-color:#5577dd;}
+.flip-cell.goal-cell .flip-num-box{background:#f5c842;color:#1a0a00;border-color:#f5c842;}
+.flip-cell.goal-cell .flip-badge{color:#ffe060;}
+.flip-cell.goal-cell .flip-name{color:#fff3c0;}
+.flip-cell.goal-cell .flip-dist-right{color:#ffe060;border-color:#f5c842;}
+@keyframes goalPulse{0%,100%{box-shadow:0 0 0 rgba(245,200,66,0);}50%{box-shadow:0 0 12px rgba(245,200,66,0.4);}}
+.flip-cell.hl{filter:brightness(1.5);}
+.flip-cell.dim{filter:brightness(0.35);}
+.dice-section{padding:0.25rem 0.6rem 0.1rem;}
+.dice-heading{font-family:'Black Han Sans',sans-serif;font-size:0.78rem;letter-spacing:0.2em;color:#c8b88a;margin-bottom:0.2rem;border-bottom:1px solid #1e1e1e;padding-bottom:0.1rem;}
+.dice-row{display:flex;align-items:stretch;gap:0;}
+.catch-area{width:120px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0 0.5rem;min-height:110px;}
+.catch-line{font-family:'Black Han Sans',sans-serif;font-size:0.88rem;color:#f5c842;letter-spacing:0.03em;line-height:1.8;text-align:center;}
+.catch-line .cl{opacity:0.2;transition:opacity 0.3s;font-size:0.78rem;line-height:1.7;}
+.catch-line .cl.on{opacity:1;font-size:0.88rem;}
+.dice-stage{flex:1;position:relative;height:110px;cursor:pointer;overflow:hidden;border-bottom:2px solid #333;}
+.dice-stage::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(245,200,66,0.4),transparent);}
+.scene{width:64px;height:64px;perspective:220px;position:absolute;}
+.cube{width:64px;height:64px;position:relative;transform-style:preserve-3d;}
+.face{position:absolute;width:64px;height:64px;background:#f0e8d0;border:2px solid #ccc;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.face.front{transform:translateZ(32px);}.face.back{transform:rotateY(180deg) translateZ(32px);}
+.face.right{transform:rotateY(90deg) translateZ(32px);}.face.left{transform:rotateY(-90deg) translateZ(32px);}
+.face.top{transform:rotateX(90deg) translateZ(32px);}.face.bottom{transform:rotateX(-90deg) translateZ(32px);}
+.face-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);width:50px;height:50px;padding:3px;}
+.dot{width:8px;height:8px;background:#1a1a1a;border-radius:50%;margin:auto;}
+.dice-shadow{position:absolute;bottom:4px;width:54px;height:10px;background:radial-gradient(ellipse,rgba(245,200,66,0.35) 0%,transparent 70%);border-radius:50%;transform:translateX(-50%);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.active{display:flex;}
+.modal{background:#1a1a1a;border:2px solid #f5c842;padding:1.5rem;width:290px;text-align:center;}
+.modal-title{font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#f5c842;letter-spacing:0.1em;margin-bottom:0.3rem;}
+.modal-sub{font-size:0.7rem;color:#c8b88a;margin-bottom:1rem;line-height:1.6;}
+.time-row{display:flex;gap:8px;align-items:center;justify-content:center;margin-bottom:0.8rem;}
+.time-input{background:#0d0d0d;border:1.5px solid #444;color:#f0e8d0 !important;font-family:'Noto Sans JP',sans-serif;font-size:1.3rem;font-weight:700;padding:0.4rem 0.6rem;width:110px;text-align:center;outline:none;border-radius:2px;-webkit-text-fill-color:#f0e8d0;}
+.time-input:focus{border-color:#f5c842;}
+.time-input::-webkit-datetime-edit{color:#f0e8d0;}
+.time-input::-webkit-datetime-edit-fields-wrapper{color:#f0e8d0;}
+.time-input::-webkit-datetime-edit-hour-field{color:#f0e8d0;}
+.time-input::-webkit-datetime-edit-minute-field{color:#f0e8d0;}
+.time-input::-webkit-datetime-edit-ampm-field{color:#f0e8d0;}
+.time-input::-webkit-calendar-picker-indicator{filter:invert(1);cursor:pointer;}
+.btn-auto{background:#2a2a2a;border:1.5px solid #555;color:#f0e8d0;font-family:'Noto Sans JP',sans-serif;font-size:0.72rem;font-weight:700;padding:0.4rem 0.8rem;cursor:pointer;border-radius:2px;white-space:nowrap;}
+.btn-auto:hover{background:#3a3a3a;border-color:#f5c842;color:#f5c842;}
+.modal-elapsed{font-size:0.75rem;color:#c8b88a;margin-bottom:1rem;min-height:1.4rem;line-height:1.5;}
+.modal-elapsed .hi{color:#ffe060;font-weight:700;}
+.btn-row{display:flex;gap:8px;padding:0.4rem 0.7rem 0.6rem;justify-content:center;flex-wrap:wrap;}
+.btn{background:#f5c842;border:2px solid #f5c842;color:#1a0a00;font-family:'Noto Sans JP',sans-serif;font-size:0.86rem;font-weight:900;letter-spacing:0.1em;padding:0.52rem 1.4rem;cursor:pointer;border-radius:2px;transition:opacity 0.12s,transform 0.1s;}
+.btn:hover{opacity:0.82;}.btn:active{transform:scale(0.97);}
+.btn:disabled{background:#2a2a2a;border-color:#2a2a2a;color:#555;cursor:default;transform:none;}
+.btn-danger{background:#dd3333;border-color:#dd3333;color:#fff;}.btn-danger:hover{opacity:0.82;}
+.btn-ghost{background:#444;border-color:#444;color:#ddd;}.btn-ghost:hover{background:#555;}
+.moving-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem;}
+.moving-title{font-family:'Black Han Sans',sans-serif;font-size:1.4rem;color:#f5c842;text-align:center;margin-bottom:1rem;}
+.moving-board{background:#141414;border:2px solid #f5c842;padding:0.7rem 1.8rem;text-align:center;min-width:200px;}
+.moving-label{font-size:0.56rem;letter-spacing:0.3em;color:#888;margin-bottom:0.25rem;}
+.moving-name{font-family:'Black Han Sans',sans-serif;font-size:1.15rem;color:#f5c842;}
+.moving-link{margin-top:0.5rem;font-size:0.72rem;}
+.moving-link a{color:#7fc8ff;text-decoration:underline;}
+.end-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.2rem;}
+.end-title{font-family:'Black Han Sans',sans-serif;font-size:1.6rem;text-align:center;margin-bottom:0.4rem;}
+.end-sub{font-size:0.76rem;color:#c8b88a;text-align:center;margin-bottom:0.8rem;}
+.history{width:100%;max-width:300px;max-height:200px;overflow-y:auto;}
+.h-item{display:flex;gap:8px;align-items:center;padding:0.26rem 0;border-bottom:1px solid #1a1a1a;font-size:0.71rem;color:#c8b88a;}
+.h-dice{background:#f5c842;color:#0a0a0f;font-weight:700;font-size:0.64rem;width:17px;height:17px;display:flex;align-items:center;justify-content:center;border-radius:2px;flex-shrink:0;}
+.start-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.7rem;padding:1rem;}
+.form-group{width:100%;max-width:280px;}
+.form-label{font-size:0.63rem;letter-spacing:0.2em;color:#c8b88a;display:block;margin-bottom:0.28rem;}
+.form-input{width:100%;background:#141414;border:1px solid #333;color:#f0e8d0;font-family:'Noto Sans JP',sans-serif;font-size:0.85rem;padding:0.48rem 0.7rem;outline:none;}
+.form-input:focus{border-color:#f5c842;}
+select.form-input option{background:#141414;}
+.mode-toggle{display:flex;border:1px solid #333;overflow:hidden;width:100%;max-width:280px;}
+.mode-btn{flex:1;background:#141414;border:none;color:#888;font-family:'Noto Sans JP',sans-serif;font-size:0.7rem;padding:0.42rem 0.4rem;cursor:pointer;transition:background 0.13s,color 0.13s;}
+.mode-btn.active{background:#f5c842;color:#0a0a0f;font-weight:700;}
+.start-time-row{display:flex;gap:8px;align-items:center;width:100%;max-width:280px;}
+.start-time-row .time-input{flex:1;font-size:0.95rem;padding:0.48rem 0.5rem;width:auto;}
+.confirm-box{background:#1a1a1a;border:2px solid #dd3333;padding:1.3rem;width:270px;text-align:center;}
+.confirm-title{font-family:'Black Han Sans',sans-serif;font-size:0.95rem;color:#dd3333;margin-bottom:0.5rem;}
+.confirm-sub{font-size:0.72rem;color:#c8b88a;margin-bottom:1rem;line-height:1.5;}
+.btn-reshuffle{background:#2a2a2a;border:1.5px solid #555;color:#c8b88a;font-family:'Noto Sans JP',sans-serif;font-size:0.62rem;font-weight:700;padding:0.25rem 0.6rem;cursor:pointer;border-radius:2px;letter-spacing:0.05em;}
+.btn-reshuffle:hover{border-color:#f5c842;color:#f5c842;}
+.btn-reshuffle:disabled{opacity:0.3;cursor:default;}
+.data-status{font-size:0.62rem;color:#888;text-align:center;padding:0.2rem;}
+.data-status.ok{color:#77dd77;}
+.data-status.err{color:#ff8888;}
+</style>
+</head>
+<body>
+
+<div class="modal-overlay" id="modal-time">
+  <div class="modal">
+    <div class="modal-title">今何時ですか？</div>
+    <div class="modal-sub">現在時刻を入力してください。<br>前回からの経過時間を残り時間から引きます。</div>
+    <div class="time-row">
+      <input class="time-input" id="modal-time-input" type="time" />
+      <button class="btn-auto" onclick="autoFillModalTime()">今の時刻</button>
+    </div>
+    <div class="modal-elapsed" id="modal-elapsed"></div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="btn" onclick="confirmTime()">確認してサイコロを振る</button>
+      <button class="btn btn-ghost" onclick="closeTimeModal()">やめる</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-giveup">
+  <div class="confirm-box">
+    <div class="confirm-title">本当にギブアップしますか？</div>
+    <div class="confirm-sub">ここまでの旅の記録は残ります。</div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="btn btn-danger" onclick="doGiveUp()">ギブアップする</button>
+      <button class="btn btn-ghost" onclick="closeGiveupModal()">旅を続ける</button>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+<div class="screen active" id="sc-start">
+  <div class="logo"><div class="logo-main">サイコロの旅</div><div class="logo-sub">ORIENTEERING EDITION</div></div>
+  <div class="start-body">
+    <div class="form-group"><label class="form-label">スタート位置（市区町村まで入力OK）</label>
+      <div class="start-time-row">
+        <input class="form-input" id="start-loc" type="text" placeholder="例：京都市左京区" style="flex:1;" />
+        <button class="btn-auto" onclick="searchStartLoc()">位置検索</button>
+      </div>
+      <div class="data-status" id="loc-status">「位置検索」を押して場所を確定してください</div>
+    </div>
+    <div class="form-group"><label class="form-label">目的地（旅のゴール）</label>
+      <div class="start-time-row">
+        <input class="form-input" id="goal-input" type="text" placeholder="例：神戸市" style="flex:1;" />
+        <button class="btn-auto" onclick="searchGoalLoc()">位置検索</button>
+      </div>
+      <div class="data-status" id="goal-status">「位置検索」を押して場所を確定してください</div>
+    </div>
+    <div class="form-group"><label class="form-label">ゴール到着期限</label>
+      <div class="start-time-row">
+        <select class="form-input" id="deadline-day" style="flex:1;">
+          <option value="1">1日目（当日）</option><option value="2">2日目</option>
+          <option value="3" selected>3日目</option><option value="4">4日目</option>
+          <option value="5">5日目</option><option value="6">6日目</option><option value="7">7日目</option>
+        </select>
+        <input class="time-input" id="deadline-time" type="time" value="20:00" style="width:100px;" />
+      </div>
+      <div class="data-status">この日時までにゴールへ到着する旅になります</div>
+    </div>
+    <div class="form-group"><label class="form-label">テレイン選択モード</label>
+      <div class="mode-toggle">
+        <button class="mode-btn active" onclick="setMode('ai')" id="mode-ai">AIがランダム選択</button>
+        <button class="mode-btn" onclick="setMode('json')" id="mode-json">どこオリリストから選択</button>
+      </div>
+      <div class="data-status" id="data-status"></div>
+    </div>
+  </div>
+  <div class="btn-row"><button class="btn" id="btn-start" onclick="startGame()">旅をはじめる</button></div>
+</div>
+
+<div class="screen" id="sc-dice">
+  <div class="logo" style="padding-bottom:0.1rem;"><div class="logo-main" style="font-size:1rem;">サイコロの旅</div></div>
+  <div class="status-bar">
+    <span>第<span class="status-val" id="step-num">1</span>投目</span>
+    <span>現在地：<span class="status-val" id="current-pos">—</span></span>
+    <span>残り <span class="status-val" id="remain-time">—</span></span>
+    <span>ゴール：<span class="status-val" id="goal-disp">—</span></span>
+  </div>
+  <div class="section-heading" style="display:flex;justify-content:space-between;align-items:center;">
+    <span id="options-heading">▶ 選択肢</span>
+    <button class="btn-reshuffle" id="btn-reshuffle" onclick="reshuffle()">🎲 選択肢を再抽選</button>
+  </div>
+  <div class="flip-list" id="flip-list"></div>
+  <div class="dice-section">
+    <div class="dice-heading">▶ サイコロを振る</div>
+    <div class="dice-row">
+      <div class="catch-area"><div class="catch-line" id="catch-txt">クリックして<br>振る</div></div>
+      <div class="dice-stage" id="dice-stage" onclick="onDiceClick()">
+        <div class="scene" id="scene">
+          <div class="cube" id="cube">
+            <div class="face front"><div class="face-grid" id="fg-front"></div></div>
+            <div class="face back"><div class="face-grid" id="fg-back"></div></div>
+            <div class="face right"><div class="face-grid" id="fg-right"></div></div>
+            <div class="face left"><div class="face-grid" id="fg-left"></div></div>
+            <div class="face top"><div class="face-grid" id="fg-top"></div></div>
+            <div class="face bottom"><div class="face-grid" id="fg-bottom"></div></div>
+          </div>
+        </div>
+        <div class="dice-shadow" id="dice-shadow"></div>
+      </div>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn" id="btn-move" onclick="goMoving()" disabled>移動開始</button>
+    <button class="btn btn-danger" onclick="giveUp()">ギブアップ</button>
+  </div>
+</div>
+
+<div class="screen" id="sc-moving">
+  <div class="logo" style="padding-bottom:0;"><div class="logo-main" style="font-size:1rem;">サイコロの旅</div></div>
+  <div class="status-bar">
+    <span>第<span class="status-val" id="mv-step">1</span>投目</span>
+    <span>残り <span class="status-val" id="mv-remain">—</span></span>
+    <span>ゴール：<span class="status-val" id="mv-goal">—</span></span>
+  </div>
+  <div class="moving-area">
+    <div class="moving-title" id="mv-title">移動中</div>
+    <div class="moving-board">
+      <div class="moving-label">HEADING TO</div>
+      <div class="moving-name" id="mv-name">—</div>
+      <div class="moving-link" id="mv-link"></div>
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn" onclick="arrive()">移動完了</button>
+    <button class="btn btn-danger" onclick="giveUp()">ギブアップ</button>
+  </div>
+</div>
+
+<div class="screen" id="sc-gameover">
+  <div class="end-area">
+    <div class="end-title" style="color:#dd3333;">ギブアップ</div>
+    <div class="end-sub">お疲れさまでした。また旅に出よう。</div>
+    <div class="history" id="go-hist"></div>
+  </div>
+  <div class="btn-row"><button class="btn btn-ghost" onclick="resetGame()">最初に戻る</button></div>
+</div>
+
+<div class="screen" id="sc-clear">
+  <div class="end-area">
+    <div class="end-title" style="color:#f5c842;" id="clear-title">旅完結！</div>
+    <div class="end-sub" id="clear-sub">目的地に到着しました。</div>
+    <div class="history" id="cl-hist"></div>
+  </div>
+  <div class="btn-row"><button class="btn" onclick="resetGame()">また旅に出る</button></div>
+</div>
+</div>
+
+<script>
+const GIST_URL='https://gist.githubusercontent.com/Morinoction/77feb8572076e339648fb95ef86976ad/raw/dokori_terrains_with_coords.json';
+
+const AI_NEAR=["近郊","隣町","里山","周辺","地元"];
+const AI_MID=["県境","隣県","中間地","山間","丘陵"];
+const AI_FAR=["北の果て","南の離島","東の秘境","西の山奥","遥か彼方","絶海の孤島"];
+
+// 距離しきい値(km) 好みに応じて変更可
+const NEAR_KM=60, MID_KM=250;
+
+let TERRAINS=null;
+let S={goal:"",currentPos:null,deadlineDay:3,deadlineMin:1200,remainHours:null,step:0,mode:"ai",history:[],rolling:false,currentTerrain:null,currentDice:0,slots:[],lastTimeMin:null,goalReached:false};
+let animRx=0,animRy=0;
+const CATCH_LINES=["何が出るかな","何が出るかな","それはサイコロ任せよ！"];
+const CATCH_TIMINGS=[200,1700,3300];
+const ROLL_MS=5200;
+const DOT_POS={1:[[1,1]],2:[[0,0],[2,2]],3:[[0,0],[1,1],[2,2]],4:[[0,0],[0,2],[2,0],[2,2]],5:[[0,0],[0,2],[1,1],[2,0],[2,2]],6:[[0,0],[0,2],[1,0],[1,2],[2,0],[2,2]]};
+const FACE_TO_ROT={1:{rx:0,ry:0},6:{rx:0,ry:180},2:{rx:0,ry:-90},5:{rx:0,ry:90},3:{rx:-90,ry:0},4:{rx:90,ry:0}};
+
+function rand(a){return a[Math.floor(Math.random()*a.length)];}
+function haversine(lat1,lng1,lat2,lng2){
+  const R=6371,rad=Math.PI/180;
+  const dLat=(lat2-lat1)*rad,dLng=(lng2-lng1)*rad;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*rad)*Math.cos(lat2*rad)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+let START_LOC=null, GOAL_LOC=null;
+async function geocodeGSI(q){
+  const res=await fetch('https://msearch.gsi.go.jp/address-search/AddressSearch?q='+encodeURIComponent(q));
+  const arr=await res.json();
+  if(!arr||!arr.length)throw new Error('not found');
+  const f=arr[0];
+  return{name:f.properties.title,lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],tn:null};
+}
+async function searchStartLoc(){
+  const q=document.getElementById('start-loc').value.trim();
+  const st=document.getElementById('loc-status');
+  if(!q){st.textContent='場所を入力してください';st.className='data-status err';return;}
+  st.textContent='検索中...';st.className='data-status';
+  try{
+    START_LOC=await geocodeGSI(q);
+    st.textContent='✓ '+START_LOC.name+' に設定しました';
+    st.className='data-status ok';
+  }catch(e){
+    START_LOC=null;
+    st.textContent='✗ 見つかりませんでした。表記を変えてお試しください（例：〇〇市）';
+    st.className='data-status err';
+  }
+}
+async function searchGoalLoc(){
+  const q=document.getElementById('goal-input').value.trim();
+  const st=document.getElementById('goal-status');
+  if(!q){st.textContent='場所を入力してください';st.className='data-status err';return;}
+  st.textContent='検索中...';st.className='data-status';
+  try{
+    GOAL_LOC=await geocodeGSI(q);
+    st.textContent='✓ '+GOAL_LOC.name+' に設定しました';
+    st.className='data-status ok';
+  }catch(e){
+    GOAL_LOC=null;
+    st.textContent='✗ 見つかりませんでした。表記を変えてお試しください（例：〇〇市）';
+    st.className='data-status err';
+  }
+}
+
+function setMode(m){
+  S.mode=m;
+  document.getElementById('mode-ai').classList.toggle('active',m==='ai');
+  document.getElementById('mode-json').classList.toggle('active',m==='json');
+  if(m==='json'&&!TERRAINS)loadTerrains();
+}
+
+const CACHE_KEY='dokori_terrains_cache_v1';
+const CACHE_TTL=24*60*60*1000; // 24時間
+
+async function loadTerrains(){
+  const st=document.getElementById('data-status');
+  // まずキャッシュを確認
+  try{
+    const raw=localStorage.getItem(CACHE_KEY);
+    if(raw){
+      const c=JSON.parse(raw);
+      if(Date.now()-c.time<CACHE_TTL&&Array.isArray(c.data)&&c.data.length){
+        TERRAINS=c.data;
+        st.textContent='✓ どこオリデータ '+TERRAINS.length+'件（キャッシュ利用）';
+        st.className='data-status ok';
+        return;
+      }
+    }
+  }catch(e){}
+  st.textContent='どこオリデータ読み込み中...';st.className='data-status';
+  try{
+    const res=await fetch(GIST_URL);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    TERRAINS=data.filter(t=>t.lat&&t.lng&&t.name_ja);
+    try{localStorage.setItem(CACHE_KEY,JSON.stringify({time:Date.now(),data:TERRAINS}));}catch(e){}
+    st.textContent='✓ どこオリデータ '+TERRAINS.length+'件 読み込み完了';
+    st.className='data-status ok';
+  }catch(e){
+    // 失敗時は期限切れキャッシュでも使う
+    try{
+      const raw=localStorage.getItem(CACHE_KEY);
+      if(raw){
+        const c=JSON.parse(raw);
+        if(Array.isArray(c.data)&&c.data.length){
+          TERRAINS=c.data;
+          st.textContent='△ 通信失敗のため前回のキャッシュを利用（'+TERRAINS.length+'件）';
+          st.className='data-status ok';
+          return;
+        }
+      }
+    }catch(e2){}
+    st.textContent='✗ データ読み込み失敗（'+e.message+'）少し待つかAIモードをご利用ください';
+    st.className='data-status err';
+    TERRAINS=null;
+  }
+}
+
+function pickAI(dist){
+  const w=dist==='near'?AI_NEAR:dist==='mid'?AI_MID:AI_FAR;
+  return{name:rand(w)+"テレイン",dist,isGoal:false};
+}
+
+// 移動速度の目安(km/h・直線距離ベース)と現地活動のバッファ(h)
+const AVG_SPEED=60, ACTIVITY_BUFFER_H=3;
+
+// 現地活動バッファ：終盤は縮めて遠方の選択肢も残す
+// 残り12h以上→3h / 6〜12h→1.5h / 6h未満→0h（移動が間に合えばOK）
+function activityBufferH(){
+  const h=S.remainHours==null?9999:S.remainHours;
+  if(h>=12)return ACTIVITY_BUFFER_H;
+  if(h>=6)return ACTIVITY_BUFFER_H/2;
+  return 0;
+}
+
+function pickJSON(dist,exclude){
+  const pos=S.currentPos;
+  // 使える時間（h）：残り時間 − 現地活動バッファ（終盤ほど縮小・1投目前は制限なし扱い）
+  const budgetH=(S.remainHours==null?9999:S.remainHours)-activityBufferH();
+  // テレインまで行き、その後ゴールまで移動しても間に合うか（直線距離÷平均速度で概算）
+  const candidates=TERRAINS
+    .map(t=>({t,km:haversine(pos.lat,pos.lng,t.lat,t.lng),
+              goalKm:GOAL_LOC?haversine(t.lat,t.lng,GOAL_LOC.lat,GOAL_LOC.lng):0}))
+    .filter(x=>x.km>=1&&x.t.terrain_number!==pos.tn&&!exclude.has(x.t.terrain_number)
+             &&(x.km+x.goalKm)/AVG_SPEED<=budgetH);
+  let pool;
+  if(dist==='near')pool=candidates.filter(x=>x.km<=NEAR_KM);
+  else if(dist==='mid')pool=candidates.filter(x=>x.km>NEAR_KM&&x.km<=MID_KM);
+  else pool=candidates.filter(x=>x.km>MID_KM);
+  // バケットが空なら、その距離帯に一番近いテレインから選ぶ（全件フォールバックはしない）
+  if(!pool.length){
+    const target=dist==='near'?NEAR_KM/2:dist==='mid'?(NEAR_KM+MID_KM)/2:MID_KM*1.5;
+    pool=candidates.slice().sort((a,b)=>Math.abs(a.km-target)-Math.abs(b.km-target)).slice(0,10);
+  }
+  if(!pool.length)return pickAI(dist); // 万一候補ゼロならAI生成で埋める
+  const c=rand(pool);
+  return{name:c.t.name_ja,pref:c.t.prefecture_name_ja,dist,km:Math.round(c.km),url:c.t.detail_url,lat:c.t.lat,lng:c.t.lng,tn:c.t.terrain_number,isGoal:false};
+}
+
+function reshuffle(){
+  if(S.rolling)return;
+  S.currentTerrain=null;
+  genSlots();fillFlipboard();
+  document.getElementById('btn-move').disabled=true;
+  document.getElementById('btn-move').textContent='移動開始';
+  document.getElementById('catch-txt').innerHTML='クリックして<br>振る';
+}
+
+// 残り時間に応じてゴールが選択肢に占めるマス数（徐々に増える）
+function goalSlotCount(){
+  const h=S.remainHours;
+  if(h==null)return 0; // 1投目前は未確定
+  if(h<=3)return 4;
+  if(h<=6)return 3;
+  if(h<=12)return 2;
+  if(h<=18)return 1;
+  return 0;
+}
+// 22:00〜翌4:59は夜間扱い
+function isNightNow(){
+  if(S.lastTimeMin===null)return false;
+  const hr=Math.floor(S.lastTimeMin/60);
+  return hr>=22||hr<5;
+}
+function genSlots(){
+  S.slots=[];
+  const exclude=new Set();
+  for(let i=1;i<=6;i++){
+    const d=i<=2?'near':i<=4?'mid':'far';
+    let slot;
+    if(S.mode==='json'&&TERRAINS){slot=pickJSON(d,exclude);if(slot.tn)exclude.add(slot.tn);}
+    else slot=pickAI(d);
+    S.slots.push(slot);
+  }
+  // ゴールを上位マスから段階的に配置
+  const g=goalSlotCount();
+  for(let i=0;i<g;i++)S.slots[i]={name:S.goal,dist:"goal",isGoal:true};
+  // 夜間はゴールの次のマスに宿泊（テレイン枠を最低2つ残す）
+  if(isNightNow()){
+    const stayCount=Math.min(2,Math.max(0,6-g-2));
+    for(let i=g;i<g+stayCount&&i<6;i++)S.slots[i]={name:'周辺で宿泊',dist:'stay',isStay:true};
+  }
+}
+
+function fillFlipboard(){
+  const dl={near:"近距離・楽",mid:"中距離",far:"遠距離・しんどい",goal:"ゴール！",stay:"周辺で宿泊"};
+  const bl={near:"NEAR",mid:"MID",far:"FAR",goal:"GOAL",stay:"STAY"};
+  const hasGoal=goalSlotCount()>0;
+  const heading=hasGoal?'▶ 選択肢（ゴールのチャンス！）':isNightNow()?'▶ 選択肢（夜も更けてきた…）':'▶ 選択肢';
+  document.getElementById('options-heading').textContent=heading;
+  const list=document.getElementById('flip-list');
+  list.innerHTML='';
+  for(let i=1;i<=6;i++){
+    const t=S.slots[i-1];
+    const cell=document.createElement('div');
+    cell.className='flip-cell fc'+i+(t.isGoal?' goal-cell':'')+(t.isStay?' stay-cell':'');
+    cell.id='fc'+i;
+    const distTxt=t.isGoal?dl.goal:t.isStay?'宿泊':(t.km!=null?t.km+'km':dl[t.dist]);
+    const icon=t.isGoal?'🏁 ':t.isStay?'🌙 ':'';
+    cell.innerHTML=
+      '<div class="flip-num-box">'+i+'</div>'+
+      '<div class="flip-content">'+
+        '<div class="flip-badge">'+bl[t.dist]+' — '+dl[t.dist]+'</div>'+
+        '<div class="flip-name">'+icon+t.name+(t.pref?' ('+t.pref+')':'')+'</div>'+
+        '<div class="flip-link" id="fl'+i+'"></div>'+
+      '</div>'+
+      '<div class="flip-dist-right">'+distTxt+'</div>';
+    list.appendChild(cell);
+  }
+}
+
+function timeStrToMin(s){if(!s)return null;const parts=s.split(':').map(Number);return parts[0]*60+parts[1];}
+function minToStr(min){const h=Math.floor(min/60)%24,m=min%60;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');}
+function nowTimeStr(){const n=new Date();return String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
+function autoFillModalTime(){document.getElementById('modal-time-input').value=nowTimeStr();updateElapsedPreview();}
+function updateElapsedPreview(){
+  const val=document.getElementById('modal-time-input').value;
+  const el=document.getElementById('modal-elapsed');
+  if(!val){el.innerHTML='';return;}
+  if(S.lastTimeMin===null){el.innerHTML='旅の<span class="hi">開始時刻</span>として記録し、<br>ゴール期限までの残り時間を計算します';return;}
+  let diff=timeStrToMin(val)-S.lastTimeMin;
+  if(diff<0)diff+=24*60;
+  el.innerHTML='前回（'+minToStr(S.lastTimeMin)+'）から <span class="hi">'+Math.floor(diff/60)+'時間'+(diff%60)+'分</span> 経過<br>残り時間から引かれます';
+}
+document.getElementById('modal-time-input').addEventListener('input',updateElapsedPreview);
+
+async function startGame(){
+  const g=document.getElementById('goal-input').value.trim();
+  if(!g){alert('目的地を入力してください');return;}
+  if(!START_LOC){
+    if(document.getElementById('start-loc').value.trim())await searchStartLoc();
+    if(!START_LOC){alert('スタート位置を検索して確定してください');return;}
+  }
+  if(!GOAL_LOC){
+    await searchGoalLoc();
+    if(!GOAL_LOC){alert('目的地を検索して確定してください');return;}
+  }
+  const dTime=document.getElementById('deadline-time').value;
+  if(!dTime){alert('ゴール到着期限の時刻を入力してください');return;}
+  if(S.mode==='json'&&!TERRAINS){
+    await loadTerrains();
+    if(!TERRAINS){alert('データを読み込めませんでした。AIモードでお試しください');return;}
+  }
+  S.goal=g;S.currentPos={...START_LOC};S.goalReached=false;
+  S.deadlineDay=parseInt(document.getElementById('deadline-day').value);
+  S.deadlineMin=timeStrToMin(dTime);
+  S.step=0;S.history=[];
+  S.lastTimeMin=null;   // 1投目のモーダルで記録
+  S.remainHours=null;   // 1投目の時刻から期限まで逆算して確定
+  nextRound();showScreen('sc-dice');
+}
+
+function onDiceClick(){
+  if(S.rolling)return;
+  document.getElementById('modal-time-input').value=nowTimeStr();
+  updateElapsedPreview();
+  document.getElementById('modal-time').classList.add('active');
+}
+function closeTimeModal(){document.getElementById('modal-time').classList.remove('active');}
+function confirmTime(){
+  const val=document.getElementById('modal-time-input').value;
+  if(!val){alert('時刻を入力してください');return;}
+  const cur=timeStrToMin(val);
+  if(S.lastTimeMin===null){
+    // 1投目：現在時刻から期限までの残り時間を計算（1日目のこの時刻を起点とする）
+    const totalMin=(S.deadlineDay-1)*24*60+S.deadlineMin-cur;
+    if(totalMin<=0){alert('ゴール期限を過ぎた時刻です。期限設定を確認してください');return;}
+    S.remainHours=totalMin/60;
+  }else{
+    let diff=cur-S.lastTimeMin;
+    if(diff<0)diff+=24*60;
+    S.remainHours=Math.max(0,S.remainHours-diff/60);
+  }
+  S.lastTimeMin=cur;
+  closeTimeModal();
+  if(S.remainHours<=0){showTimeUp();return;}
+  genSlots();fillFlipboard();updateStatusBar();
+  rollDice();
+}
+function showTimeUp(){
+  document.getElementById('clear-title').textContent='時間切れ！';
+  document.getElementById('clear-sub').textContent='旅の期間が終了しました。お疲れさまでした。';
+  renderHist('cl-hist');showScreen('sc-clear');
+}
+function nextRound(){
+  S.step++;S.rolling=false;S.currentTerrain=null;
+  genSlots();fillFlipboard();updateStatusBar();
+  document.getElementById('btn-move').disabled=true;
+  document.getElementById('btn-move').textContent='移動開始';
+  document.getElementById('catch-txt').innerHTML='クリックして<br>振る';
+  resetDicePos();
+}
+function updateStatusBar(){
+  document.getElementById('step-num').textContent=S.step;
+  document.getElementById('remain-time').textContent=S.remainHours==null?'（1投目で確定）':fmtH(S.remainHours);
+  document.getElementById('goal-disp').textContent=S.goal;
+  document.getElementById('current-pos').textContent=S.currentPos.name;
+}
+function renderFace(id,n){
+  const f=document.getElementById(id);f.innerHTML='';
+  for(let r=0;r<3;r++)for(let c=0;c<3;c++){
+    const cell=document.createElement('div');cell.style.cssText='display:flex;align-items:center;justify-content:center;';
+    if(DOT_POS[n].some(d=>d[0]===r&&d[1]===c)){const d=document.createElement('div');d.className='dot';cell.appendChild(d);}
+    f.appendChild(cell);
+  }
+}
+function initCube(){renderFace('fg-front',1);renderFace('fg-back',6);renderFace('fg-right',2);renderFace('fg-left',5);renderFace('fg-top',3);renderFace('fg-bottom',4);}
+function resetDicePos(){
+  const stage=document.getElementById('dice-stage'),scene=document.getElementById('scene'),shadow=document.getElementById('dice-shadow');
+  if(!stage.offsetWidth){setTimeout(resetDicePos,50);return;}
+  const groundY=stage.offsetHeight-64-4;
+  scene.style.left='8px';scene.style.top=groundY+'px';
+  shadow.style.left='40px';shadow.style.opacity='0.7';shadow.style.transform='scaleX(1) translateX(-50%)';
+  animRx=0;animRy=0;
+  document.getElementById('cube').style.transform='rotateX(0deg) rotateY(0deg)';
+}
+function rollDice(){
+  if(S.rolling)return;
+  S.rolling=true;
+  document.getElementById('btn-move').disabled=true;
+  document.getElementById('btn-reshuffle').disabled=true;
+  const catchEl=document.getElementById('catch-txt');
+  catchEl.innerHTML=CATCH_LINES.map((l,i)=>'<div class="cl" id="cl'+i+'">'+l+'</div>').join('');
+  CATCH_TIMINGS.forEach((t,i)=>{setTimeout(()=>{
+    for(let j=0;j<CATCH_LINES.length;j++){
+      const e=document.getElementById('cl'+j);
+      if(e)e.classList.toggle('on',j===i);
+    }
+  },t);});
+  const stage=document.getElementById('dice-stage'),scene=document.getElementById('scene');
+  const shadow=document.getElementById('dice-shadow'),cube=document.getElementById('cube');
+  const stageW=stage.offsetWidth,stageH=stage.offsetHeight,diceSize=64;
+  const groundY=stageH-diceSize-4,maxBounceH=stageH*0.65;
+  const finalResult=Math.floor(Math.random()*6)+1;
+  const fr=FACE_TO_ROT[finalResult];
+  const totalRx=animRx+720+fr.rx,totalRy=animRy+1080+fr.ry;
+  const startTime=Date.now();
+  function bounceY(t){
+    const bs=[{s:0,e:0.35,h:1},{s:0.35,e:0.62,h:0.45},{s:0.62,e:0.80,h:0.18},{s:0.80,e:0.92,h:0.06},{s:0.92,e:1,h:0}];
+    for(const b of bs)if(t>=b.s&&t<=b.e){const l=(t-b.s)/(b.e-b.s);return groundY-Math.sin(l*Math.PI)*b.h*maxBounceH;}
+    return groundY;
+  }
+  function animate(){
+    const t=Math.min((Date.now()-startTime)/ROLL_MS,1);
+    const px=8+(stageW-diceSize-16)*(1-Math.pow(1-t,2.5)),py=bounceY(t);
+    scene.style.left=px+'px';scene.style.top=py+'px';
+    const dist=groundY-py;
+    shadow.style.left=(px+32)+'px';
+    shadow.style.opacity=Math.max(0.1,0.7-dist/maxBounceH*0.5);
+    shadow.style.transform='scaleX('+Math.max(0.3,1-dist/maxBounceH*0.7)+') translateX(-50%)';
+    const e=1-Math.pow(1-t,2.5);
+    cube.style.transform='rotateX('+(animRx+(totalRx-animRx)*e)+'deg) rotateY('+(animRy+(totalRy-animRy)*e)+'deg)';
+    if(t<1){requestAnimationFrame(animate);}
+    else{
+      scene.style.top=groundY+'px';animRx=totalRx%360;animRy=totalRy%360;
+      S.currentDice=finalResult;S.currentTerrain=S.slots[finalResult-1];
+      for(let i=1;i<=6;i++){
+        const c=document.getElementById('fc'+i);
+        if(i===finalResult)c.classList.add('hl');else c.classList.add('dim');
+      }
+      if(S.currentTerrain.url){
+        document.getElementById('fl'+finalResult).innerHTML='<a href="'+S.currentTerrain.url+'" target="_blank" rel="noopener">どこオリで見る →</a>';
+      }
+      if(S.currentTerrain.isGoal){
+        catchEl.textContent='ゴールだ！！';
+        document.getElementById('btn-move').textContent='ゴールへ向かう';
+      }else if(S.currentTerrain.isStay){
+        catchEl.textContent='今夜はここまで！';
+        document.getElementById('btn-move').textContent='宿泊する';
+      }
+      document.getElementById('btn-move').disabled=false;
+      document.getElementById('btn-reshuffle').disabled=false;
+      S.rolling=false;
+    }
+  }
+  requestAnimationFrame(animate);
+}
+function goMoving(){
+  if(!S.currentTerrain)return;
+  const t=S.currentTerrain;
+  S.history.push({step:S.step,dice:S.currentDice,from:S.currentPos.name,terrain:(t.isStay?'🌙 ':'')+t.name,time:S.lastTimeMin!==null?minToStr(S.lastTimeMin):'',isGoal:!!t.isGoal,km:t.km});
+  if(t.isGoal)S.goalReached=true;
+  if(!t.isStay){
+    // 宿泊時は現在地を動かさない
+    S.currentPos={name:t.name,lat:t.lat!=null?t.lat:S.currentPos.lat,lng:t.lng!=null?t.lng:S.currentPos.lng,tn:t.tn!=null?t.tn:null};
+  }
+  document.getElementById('mv-title').textContent=t.isStay?'宿泊中':'移動中';
+  document.getElementById('mv-step').textContent=S.step;
+  document.getElementById('mv-remain').textContent=fmtH(S.remainHours);
+  document.getElementById('mv-goal').textContent=S.goal;
+  document.getElementById('mv-name').textContent=(t.isGoal?'🏁 ':t.isStay?'🌙 ':'')+t.name;
+  document.getElementById('mv-link').innerHTML=t.url?'<a href="'+t.url+'" target="_blank" rel="noopener">どこオリでテレイン情報を見る →</a>':'';
+  showScreen('sc-moving');
+}
+function arrive(){
+  if(S.goalReached){
+    document.getElementById('clear-title').textContent='旅完結！';
+    document.getElementById('clear-sub').textContent='目的地「'+S.goal+'」に到着しました！お疲れさまでした🎉';
+    renderHist('cl-hist');showScreen('sc-clear');return;
+  }
+  if(S.remainHours<=0){showTimeUp();return;}
+  nextRound();showScreen('sc-dice');
+}
+function giveUp(){document.getElementById('modal-giveup').classList.add('active');}
+function closeGiveupModal(){document.getElementById('modal-giveup').classList.remove('active');}
+function doGiveUp(){closeGiveupModal();renderHist('go-hist');showScreen('sc-gameover');}
+function renderHist(id){
+  const el=document.getElementById(id);
+  if(!S.history.length){el.innerHTML='<div style="color:#666;font-size:0.73rem;">記録なし</div>';return;}
+  el.innerHTML=S.history.map(h=>'<div class="h-item"><div class="h-dice">'+h.dice+'</div><div>第'+h.step+'投　'+h.from+' → '+(h.isGoal?'🏁 ':'')+h.terrain+(h.km!=null?' ('+h.km+'km)':'')+(h.time?' '+h.time:'')+'</div></div>').join('');
+}
+function resetGame(){
+  const mode=S.mode;
+  S={goal:"",currentPos:null,deadlineDay:3,deadlineMin:1200,remainHours:null,step:0,mode:mode,history:[],rolling:false,currentTerrain:null,currentDice:0,slots:[],lastTimeMin:null,goalReached:false};
+  animRx=0;animRy=0;
+  document.getElementById('goal-input').value='';
+  document.getElementById('clear-title').textContent='旅完結！';
+  document.getElementById('clear-sub').textContent='目的地に到着しました。';
+  showScreen('sc-start');
+}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function fmtH(h){const hh=Math.floor(h),mm=Math.round((h-hh)*60);if(hh>=24)return Math.floor(hh/24)+'日'+(hh%24?hh%24+'時間':'')+(mm?mm+'分':'');return hh+'時間'+(mm?mm+'分':'');}
+
+initCube();
+setTimeout(resetDicePos,150);
+</script>
+</body>
+</html>
