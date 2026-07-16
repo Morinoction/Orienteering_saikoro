@@ -23,28 +23,30 @@ body{background:#0a0a0f;}
 .flip-content{flex:1;padding:0.22rem 0.5rem;display:flex;flex-direction:column;justify-content:center;min-width:0;}
 .flip-badge{font-size:0.5rem;letter-spacing:0.1em;opacity:0.7;margin-bottom:1px;}
 .flip-name{font-size:0.75rem;font-weight:700;line-height:1.2;}
+.furi{display:block;font-size:0.6rem;font-weight:400;opacity:0.8;margin-bottom:1px;}
 .flip-link{font-size:0.6rem;margin-top:2px;}
 .flip-link a{color:#7fc8ff;text-decoration:underline;}
 .flip-dist-right{width:54px;display:flex;align-items:center;justify-content:center;font-size:0.52rem;text-align:center;line-height:1.3;border-left:2px solid;padding:0 3px;flex-shrink:0;}
-.fc1{border-color:#cc2222;background:#1a0000;}.fc1 .flip-num-box{background:#cc2222;color:#fff;border-color:#cc2222;}.fc1 .flip-badge{color:#ff9999;}.fc1 .flip-name{color:#ffcccc;}.fc1 .flip-dist-right{color:#ff8888;border-color:#cc2222;}
-.fc2{border-color:#cc7700;background:#1a0d00;}.fc2 .flip-num-box{background:#cc7700;color:#fff;border-color:#cc7700;}.fc2 .flip-badge{color:#ffcc77;}.fc2 .flip-name{color:#ffe0aa;}.fc2 .flip-dist-right{color:#ffbb55;border-color:#cc7700;}
-.fc3{border-color:#aaaa00;background:#181800;}.fc3 .flip-num-box{background:#aaaa00;color:#000;border-color:#aaaa00;}.fc3 .flip-badge{color:#eeee55;}.fc3 .flip-name{color:#ffffaa;}.fc3 .flip-dist-right{color:#dddd44;border-color:#aaaa00;}
-.fc4{border-color:#228822;background:#001a00;}.fc4 .flip-num-box{background:#228822;color:#fff;border-color:#228822;}.fc4 .flip-badge{color:#88ee88;}.fc4 .flip-name{color:#bbffbb;}.fc4 .flip-dist-right{color:#77dd77;border-color:#228822;}
-.fc5{border-color:#2255bb;background:#00001a;}.fc5 .flip-num-box{background:#2255bb;color:#fff;border-color:#2255bb;}.fc5 .flip-badge{color:#88aaff;}.fc5 .flip-name{color:#bbccff;}.fc5 .flip-dist-right{color:#7799ee;border-color:#2255bb;}
-.fc6{border-color:#882299;background:#110011;}.fc6 .flip-num-box{background:#882299;color:#fff;border-color:#882299;}.fc6 .flip-badge{color:#dd88ff;}.fc6 .flip-name{color:#eeccff;}.fc6 .flip-dist-right{color:#cc77ee;border-color:#882299;}
-.flip-cell.goal-cell{border-color:#f5c842;background:#1a1400;animation:goalPulse 1.5s ease-in-out infinite;}
-.flip-cell.stay-cell{border-color:#5577dd;background:#0a0e22;}
-.flip-cell.stay-cell .flip-num-box{background:#5577dd;color:#fff;border-color:#5577dd;}
-.flip-cell.stay-cell .flip-badge{color:#99aaff;}
-.flip-cell.stay-cell .flip-name{color:#ccd6ff;}
-.flip-cell.stay-cell .flip-dist-right{color:#99aaff;border-color:#5577dd;}
-.flip-cell.goal-cell .flip-num-box{background:#f5c842;color:#1a0a00;border-color:#f5c842;}
-.flip-cell.goal-cell .flip-badge{color:#ffe060;}
-.flip-cell.goal-cell .flip-name{color:#fff3c0;}
-.flip-cell.goal-cell .flip-dist-right{color:#ffe060;border-color:#f5c842;}
+/* 画用紙パステル風カラー（手書きフリップ風） */
+.fc1{border-color:#e089b3;background:#f4a8c8;}.fc1 .flip-num-box{background:#fff;color:#222;border-color:#e089b3;}.fc1 .flip-badge{color:#8a3a5e;}.fc1 .flip-name{color:#2a1520;}.fc1 .flip-dist-right{color:#6a2a48;border-color:#e089b3;}
+.fc2{border-color:#e08a3c;background:#f5a75f;}.fc2 .flip-num-box{background:#fff;color:#222;border-color:#e08a3c;}.fc2 .flip-badge{color:#7a4515;}.fc2 .flip-name{color:#2a1805;}.fc2 .flip-dist-right{color:#6a3a10;border-color:#e08a3c;}
+.fc3{border-color:#b57fc7;background:#cfa0dd;}.fc3 .flip-num-box{background:#fff;color:#222;border-color:#b57fc7;}.fc3 .flip-badge{color:#5e3070;}.fc3 .flip-name{color:#241030;}.fc3 .flip-dist-right{color:#4e2560;border-color:#b57fc7;}
+.fc4{border-color:#d9b32a;background:#f0cb45;}.fc4 .flip-num-box{background:#fff;color:#222;border-color:#d9b32a;}.fc4 .flip-badge{color:#6e5a08;}.fc4 .flip-name{color:#2a2205;}.fc4 .flip-dist-right{color:#5e4c06;border-color:#d9b32a;}
+.fc5{border-color:#5b9dd4;background:#7db8e8;}.fc5 .flip-num-box{background:#fff;color:#222;border-color:#5b9dd4;}.fc5 .flip-badge{color:#1e4a70;}.fc5 .flip-name{color:#0a1e30;}.fc5 .flip-dist-right{color:#173e60;border-color:#5b9dd4;}
+.fc6{border-color:#9cb542;background:#b7cd5e;}.fc6 .flip-num-box{background:#fff;color:#222;border-color:#9cb542;}.fc6 .flip-badge{color:#465515;}.fc6 .flip-name{color:#1a2205;}.fc6 .flip-dist-right{color:#3a4810;border-color:#9cb542;}
+.flip-cell.goal-cell{border-color:#e0b520;background:#ffe89a;animation:goalPulse 1.5s ease-in-out infinite;}
+.flip-cell.stay-cell{border-color:#7688cc;background:#aab8e8;}
+.flip-cell.stay-cell .flip-num-box{background:#fff;color:#222;border-color:#7688cc;}
+.flip-cell.stay-cell .flip-badge{color:#2a3870;}
+.flip-cell.stay-cell .flip-name{color:#101838;}
+.flip-cell.stay-cell .flip-dist-right{color:#243060;border-color:#7688cc;}
+.flip-cell.goal-cell .flip-num-box{background:#fff;color:#222;border-color:#e0b520;}
+.flip-cell.goal-cell .flip-badge{color:#7a5e05;}
+.flip-cell.goal-cell .flip-name{color:#2a2000;}
+.flip-cell.goal-cell .flip-dist-right{color:#6a5205;border-color:#e0b520;}
 @keyframes goalPulse{0%,100%{box-shadow:0 0 0 rgba(245,200,66,0);}50%{box-shadow:0 0 12px rgba(245,200,66,0.4);}}
-.flip-cell.hl{filter:brightness(1.5);}
-.flip-cell.dim{filter:brightness(0.35);}
+.flip-cell.hl{filter:brightness(1.08) saturate(1.3);box-shadow:0 0 10px rgba(255,255,255,0.35);}
+.flip-cell.dim{filter:brightness(0.45) saturate(0.4);}
 .dice-section{padding:0.25rem 0.6rem 0.1rem;}
 .dice-heading{font-family:'Black Han Sans',sans-serif;font-size:0.78rem;letter-spacing:0.2em;color:#c8b88a;margin-bottom:0.2rem;border-bottom:1px solid #1e1e1e;padding-bottom:0.1rem;}
 .dice-row{display:flex;align-items:stretch;gap:0;}
@@ -284,11 +286,21 @@ select.form-input option{background:#141414;}
 </div>
 
 <script>
+// 同じリポジトリに置いたJSONを読む（ファイル名を変えた場合はここを修正）
 const GIST_URL='./dokori_terrains_with_coords.json';
 
 const AI_NEAR=["近郊","隣町","里山","周辺","地元"];
 const AI_MID=["県境","隣県","中間地","山間","丘陵"];
 const AI_FAR=["北の果て","南の離島","東の秘境","西の山奥","遥か彼方","絶海の孤島"];
+
+// 行き先に付くフリ（前口上）— 番組のボード風
+const FURI={
+  near:["ご褒美だ、","軽い軽い、","そろそろ楽をしよう、"],
+  mid:["ほどよく旅情、","まだまだ序の口、","旅はこれからだ、"],
+  far:["一気に遠くへ、","地獄行きだ…","これはやばいですね…","過酷の香り、"],
+  backward:["まさかの逆戻り、","ゴールが遠のく…","何やってんだよ！"]
+};
+const FURI_RATE=0.4; // フリが付く確率
 
 // 距離しきい値(km) 好みに応じて変更可
 const NEAR_KM=60, MID_KM=250;
@@ -425,11 +437,12 @@ function pickJSON(dist,exclude){
   // 使える時間（h）：残り時間 − 現地活動バッファ（終盤ほど縮小・1投目前は制限なし扱い）
   const budgetH=(S.remainHours==null?9999:S.remainHours)-activityBufferH();
   // テレインまで行き、その後ゴールまで移動しても間に合うか（直線距離÷平均速度で概算）
+  // ゴール座標が取れていない場合は保険として往復相当で判定
   const candidates=TERRAINS
     .map(t=>({t,km:haversine(pos.lat,pos.lng,t.lat,t.lng),
-              goalKm:GOAL_LOC?haversine(t.lat,t.lng,GOAL_LOC.lat,GOAL_LOC.lng):0}))
+              goalKm:GOAL_LOC?haversine(t.lat,t.lng,GOAL_LOC.lat,GOAL_LOC.lng):null}))
     .filter(x=>x.km>=1&&x.t.terrain_number!==pos.tn&&!exclude.has(x.t.terrain_number)
-             &&(x.km+x.goalKm)/AVG_SPEED<=budgetH);
+             &&(x.km+(x.goalKm!=null?x.goalKm:x.km))/AVG_SPEED<=budgetH);
   let pool;
   if(dist==='near')pool=candidates.filter(x=>x.km<=NEAR_KM);
   else if(dist==='mid')pool=candidates.filter(x=>x.km>NEAR_KM&&x.km<=MID_KM);
@@ -441,7 +454,7 @@ function pickJSON(dist,exclude){
   }
   if(!pool.length)return pickAI(dist); // 万一候補ゼロならAI生成で埋める
   const c=rand(pool);
-  return{name:c.t.name_ja,pref:c.t.prefecture_name_ja,dist,km:Math.round(c.km),url:c.t.detail_url,lat:c.t.lat,lng:c.t.lng,tn:c.t.terrain_number,isGoal:false};
+  return{name:c.t.name_ja,pref:c.t.prefecture_name_ja,dist,km:Math.round(c.km),goalKm:c.goalKm,url:c.t.detail_url,lat:c.t.lat,lng:c.t.lng,tn:c.t.terrain_number,isGoal:false};
 }
 
 function reshuffle(){
@@ -473,20 +486,31 @@ function isNightNow(){
 function genSlots(){
   S.slots=[];
   const exclude=new Set();
+  // 現在地からゴールまでの距離（逆戻り判定用）
+  const curGoalKm=(GOAL_LOC&&S.currentPos&&S.currentPos.lat!=null)
+    ?haversine(S.currentPos.lat,S.currentPos.lng,GOAL_LOC.lat,GOAL_LOC.lng):null;
   for(let i=1;i<=6;i++){
     const d=i<=2?'near':i<=4?'mid':'far';
     let slot;
     if(S.mode==='json'&&TERRAINS){slot=pickJSON(d,exclude);if(slot.tn)exclude.add(slot.tn);}
     else slot=pickAI(d);
+    // フリ（前口上）を付与：ゴールから遠ざかる行き先は「逆戻り」ネタ優先
+    if(!slot.isGoal&&!slot.isStay&&Math.random()<FURI_RATE){
+      if(curGoalKm!=null&&slot.goalKm!=null&&slot.goalKm>curGoalKm+30){
+        slot.furi=rand(FURI.backward);
+      }else if(FURI[d]){
+        slot.furi=rand(FURI[d]);
+      }
+    }
     S.slots.push(slot);
   }
   // ゴールを上位マスから段階的に配置
   const g=goalSlotCount();
   for(let i=0;i<g;i++)S.slots[i]={name:S.goal,dist:"goal",isGoal:true};
-  // 夜間はゴールの次のマスに宿泊（テレイン枠を最低2つ残す）
+  // 夜間は5,6のマスを宿泊に（1〜4は移動マスのまま）
   if(isNightNow()){
-    const stayCount=Math.min(2,Math.max(0,6-g-2));
-    for(let i=g;i<g+stayCount&&i<6;i++)S.slots[i]={name:'周辺で宿泊',dist:'stay',isStay:true};
+    S.slots[4]={name:'周辺で宿泊',dist:'stay',isStay:true};
+    S.slots[5]={name:'周辺で宿泊',dist:'stay',isStay:true};
   }
 }
 
@@ -503,13 +527,14 @@ function fillFlipboard(){
     const cell=document.createElement('div');
     cell.className='flip-cell fc'+i+(t.isGoal?' goal-cell':'')+(t.isStay?' stay-cell':'');
     cell.id='fc'+i;
-    const distTxt=t.isGoal?dl.goal:t.isStay?'宿泊':(t.km!=null?t.km+'km':dl[t.dist]);
+    const distTxt=t.isGoal?dl.goal:t.isStay?'宿泊':(t.km!=null?t.km+'km'+(t.goalKm!=null?'<br>G:'+Math.round(t.goalKm)+'km':''):dl[t.dist]);
     const icon=t.isGoal?'🏁 ':t.isStay?'🌙 ':'';
+    const furiHtml=t.furi?'<span class="furi">'+t.furi+'</span>':'';
     cell.innerHTML=
       '<div class="flip-num-box">'+i+'</div>'+
       '<div class="flip-content">'+
         '<div class="flip-badge">'+bl[t.dist]+' — '+dl[t.dist]+'</div>'+
-        '<div class="flip-name">'+icon+t.name+(t.pref?' ('+t.pref+')':'')+'</div>'+
+        '<div class="flip-name">'+furiHtml+icon+t.name+(t.pref?' ('+t.pref+')':'')+'</div>'+
         '<div class="flip-link" id="fl'+i+'"></div>'+
       '</div>'+
       '<div class="flip-dist-right">'+distTxt+'</div>';
@@ -763,7 +788,7 @@ function goMoving(){
     // 宿泊時は現在地を動かさない
     S.currentPos={name:t.name,lat:t.lat!=null?t.lat:S.currentPos.lat,lng:t.lng!=null?t.lng:S.currentPos.lng,tn:t.tn!=null?t.tn:null};
   }
-  const mvName=(t.isGoal?'🏁 ':t.isStay?'🌙 ':'')+t.name;
+  const mvName=(t.isGoal?'🏁 ':t.isStay?'🌙 ':'')+(t.furi?t.furi:'')+t.name;
   const mvLink=t.url?'<a href="'+t.url+'" target="_blank" rel="noopener">どこオリでテレイン情報を見る →</a>':'';
   document.getElementById('mv-title').textContent=t.isStay?'宿泊中':'移動中';
   document.getElementById('mv-step').textContent=S.step;
